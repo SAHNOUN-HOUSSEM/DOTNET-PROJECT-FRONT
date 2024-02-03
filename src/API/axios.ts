@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL: string = import.meta.env.REACT_APP_API_BASE_URL;
+const BASE_URL: string = "http://localhost:5170"
 
 
 export default axios.create({
