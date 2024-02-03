@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import styles from "./Register.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,8 +9,9 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "../../API/axios";
 
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const PWD_REGEX: RegExp =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const EMAIL_REGEX: RegExp = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 interface IAdminData {
   firstName: string;
@@ -22,14 +23,14 @@ interface IAdminData {
 
 interface IRegisterData {
   admin: IAdminData;
-  adminCode: number | undefined;
+  adminCode: number | string | undefined;
 }
 
-export default function RegisterForm() {
+const RegisterForm: FC = () => {
   const navigate = useNavigate();
 
-  const errRef = useRef<HTMLParagraphElement>();
-  const userRef = useRef<HTMLInputElement>();
+  const errRef = useRef<HTMLParagraphElement | null>(null);
+  const userRef = useRef<HTMLInputElement | null>(null);
 
   const [firstName, setFirstName] = useState("");
 
@@ -80,9 +81,11 @@ export default function RegisterForm() {
       await axios("/register", registerData);
       navigate("/login");
     } catch (err) {
+      //@ts-expect-error execpt
       if (err && !err?.response) {
         setErrMsg("No Server Response");
       } else {
+        //@ts-expect-error execpt
         setErrMsg(err.response.data.error);
       }
       errRef.current?.focus();
@@ -303,4 +306,6 @@ export default function RegisterForm() {
       </div>
     </>
   );
-}
+};
+
+export default RegisterForm;

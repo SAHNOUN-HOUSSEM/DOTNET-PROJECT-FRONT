@@ -1,6 +1,6 @@
 export interface IAuth {
     accessToken?: string,
-    adminId?: string
+    userId?: string
 }
 
 export interface IAuthContext {

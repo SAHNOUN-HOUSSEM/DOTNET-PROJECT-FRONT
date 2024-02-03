@@ -40,7 +40,7 @@ export default function LoginForm() {
       });
       const data = response.data;
       setAuth &&
-        setAuth({ accessToken: data.accessToken, adminId: data.adminId });
+        setAuth({ accessToken: data.accessToken, userId: data.adminId });
       navigate(from, { replace: true });
     } catch (err) {
       console.log(err);

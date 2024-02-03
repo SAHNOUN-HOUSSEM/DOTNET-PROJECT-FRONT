@@ -1,17 +1,24 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import styles from "./ParametresCompte.module.css";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Spin from "../UI/Spin";
-import { type } from "@testing-library/user-event/dist/type";
-const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+import IUser from "../../interfaces/user.types";
+const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const PHONE_REGEX = /^\+?[0-9]+$/;
 
+type Props = {
+  user: IUser;
+  setUser: (user: IUser) => void;
+  setErrMsg: (err: string) => void;
+  setChangeSettings: (value: number) => void;
+};
+
 export default function ChangeAccountSettingsForm({
-  admin,
-  setAdmin,
+  user,
+  setUser,
   setErrMsg,
   setChangeSettings,
-}) {
+}: Props) {
   const privateAxios = useAxiosPrivate();
 
   const [validEmail, setValidEmail] = useState(false);
@@ -23,18 +30,18 @@ export default function ChangeAccountSettingsForm({
     setShowConfirmAccountSettingsChange,
   ] = useState(false);
 
-  const [formData, setFormData] = useState(admin);
+  const [formData, setFormData] = useState(user);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent) => {
     setErrMsg("");
-    const { name, value } = e.target;
+    const { name, value } = e.target as HTMLInputElement;
     setFormData({
       ...formData,
       [name]: value,
     });
   };
 
-  const handleChangeAccountSettingsFormSubmition = async (e) => {
+  const handleChangeAccountSettingsFormSubmition = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -44,7 +51,7 @@ export default function ChangeAccountSettingsForm({
       setIsLoading(false);
       return;
     }
-    const checkPhone = PHONE_REGEX.test(formData.phone);
+    const checkPhone = PHONE_REGEX.test(formData.phone as string);
     if (!checkPhone) {
       setErrMsg(
         "numéro de téléphone invalide. Veuillez entrer un numéro de téléphone valide."
@@ -58,19 +65,22 @@ export default function ChangeAccountSettingsForm({
       phone: formData.phone,
     };
     try {
-      const response = await privateAxios.put(`admins/${admin._id}`, {
+      const response = await privateAxios.put(`admins/${user._id}`, {
         admin: adminUpdateData,
       });
       const adminData = response.data.admin;
-      setAdmin(adminData);
+      setUser(adminData);
     } catch (err) {
       setIsLoading(false);
+      //@ts-expect-error ts-migrate(7006) FIXME: Parameter 'err' implicitly has an 'any' type.
       if (!err?.response) {
         setErrMsg("No Server Response");
-      } else if (err.response?.status === 404) {
+        //@ts-expect-error ts-migrate(7006) FIXME: Parameter 'err' implicitly has an 'any' type.
+      } else if (err?.response?.status === 404) {
         setErrMsg("aucune carousel n'est créée");
       } else {
-        setErrMsg(err.response.data.error);
+        //@ts-expect-error ts-migrate(7006) FIXME: Parameter 'err' implicitly has an 'any' type.
+        setErrMsg(err?.response.data.error);
       }
     } finally {
       setIsLoading(false);
@@ -80,7 +90,7 @@ export default function ChangeAccountSettingsForm({
 
   useEffect(() => {
     setValidEmail(EMAIL_REGEX.test(formData.email));
-    setValidPhone(PHONE_REGEX.test(formData.phone));
+    setValidPhone(PHONE_REGEX.test(formData.phone as string));
   }, [formData]);
 
   return (
@@ -113,8 +123,7 @@ export default function ChangeAccountSettingsForm({
         <button
           className={`btn btn-danger w-100 mb-3`}
           disabled={
-            (admin.email === formData.email &&
-              admin.phone === formData.phone) ||
+            (user.email === formData.email && user.phone === formData.phone) ||
             isLoading ||
             !validEmail ||
             !validPhone

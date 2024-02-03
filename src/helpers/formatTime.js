@@ -1,4 +1,4 @@
-module.exports.formatTime = (time) => {
+const formatTime = (time) => {
   const date = new Date(time);
 
   const formattedDate = date.toLocaleDateString("en-US", {
@@ -17,3 +17,5 @@ module.exports.formatTime = (time) => {
 
   return formattedDateTime;
 };
+
+export default formatTime;

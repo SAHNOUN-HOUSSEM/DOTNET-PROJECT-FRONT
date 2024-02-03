@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import styles from "./ParametresCompte.module.css";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Spin from "../UI/Spin";
@@ -9,13 +9,19 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import useAuth from "../../hooks/useAuth";
+import { IAuth } from "../../hooks/types";
+import { AxiosError } from "axios";
 
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
-export default function ChangePasswordForm({ setErrMsg, setChangeSettings }) {
+type Props = {
+  setErrMsg: (err: string) => void;
+  setChangeSettings: (changeSettings: number) => void;
+};
+const ChangePasswordForm: FC<Props> = ({ setErrMsg, setChangeSettings }) => {
   const { auth } = useAuth();
   const privateAxios = useAxiosPrivate();
-  const userRef = useRef();
+  const userRef = useRef<HTMLInputElement | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,7 +41,7 @@ export default function ChangePasswordForm({ setErrMsg, setChangeSettings }) {
   const [matchFocus, setMatchFocus] = useState(false);
 
   useEffect(() => {
-    userRef.current.focus();
+    userRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -43,48 +49,43 @@ export default function ChangePasswordForm({ setErrMsg, setChangeSettings }) {
     setValidMatch(password === matchPwd);
   }, [password, matchPwd]);
 
-  const handleChangeAccountSettingsFormSubmition = async (e) => {
+  const handleChangeAccountSettingsFormSubmition = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { adminId } = auth;
+    const { userId }: IAuth = auth ?? {};
     const updatePasswordData = {
       newPassword: password,
       newPasswordCheck: matchPwd,
       oldPassword: oldPassword,
     };
     try {
-      const response = await privateAxios.post(
-        `change-password/${adminId}`,
-        updatePasswordData,
-        {
-          withCredentials: true,
-        }
-      );
-      const responseData = response.data;
-      setTimeout(() => {
-        setIsLoading(false);
-        setChangeSettings(0);
-      }, 2000);
+      await privateAxios.post(`change-password/${userId}`, updatePasswordData, {
+        withCredentials: true,
+      });
+      setChangeSettings(0);
     } catch (err) {
       setIsLoading(false);
-      if (!err?.response) {
+      if (!(err as AxiosError)?.response) {
         setErrMsg("No Server Response");
-      } else if (err.response?.status === 400) {
+      } else if ((err as AxiosError).response?.status === 400) {
         setErrMsg("données érroné");
-      } else if (err.response?.status === 401) {
+      } else if ((err as AxiosError).response?.status === 401) {
         setErrMsg("non autorisé");
-      } else if (err.response?.status === 404) {
+      } else if ((err as AxiosError).response?.status === 404) {
         setErrMsg("inexistant");
       } else {
+        //@ts-expect-error  err
         setErrMsg(err.response.data.error);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     setErrMsg("");
-  }, [password, matchPwd, oldPassword]);
+  }, [password, matchPwd, oldPassword, setErrMsg]);
 
   return (
     <div>
@@ -201,4 +202,6 @@ export default function ChangePasswordForm({ setErrMsg, setChangeSettings }) {
       </form>
     </div>
   );
-}
+};
+
+export default ChangePasswordForm;

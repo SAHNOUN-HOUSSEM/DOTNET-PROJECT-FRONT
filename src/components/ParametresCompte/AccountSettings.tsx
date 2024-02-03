@@ -6,15 +6,22 @@ import Spin from "../UI/Spin";
 import AccountSettingsCard from "./AccountSettingsCard";
 import ChangeAccountSettingsForm from "./ChangeAccountSettingsForm";
 import ChangePasswordForm from "./ChangePasswordForm";
+import { AxiosError } from "axios";
+import IUser from "../../interfaces/user.types";
 
-export default function AccountSettings({ setErrMsg }) {
+export default function AccountSettings({
+  setErrMsg,
+}: {
+  setErrMsg: (err: string) => void;
+}) {
   const privateAxios = useAxiosPrivate();
 
   const { auth } = useAuth();
 
-  const { adminId } = auth;
+  const { userId } = auth ?? {};
 
-  const [admin, setAdmin] = useState({
+  const [user, setUser] = useState<IUser>({
+    _id: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -29,25 +36,26 @@ export default function AccountSettings({ setErrMsg }) {
     const fetchAdminData = async () => {
       setIsLoading(true);
       try {
-        const response = await privateAxios.get(`admins/${adminId}`, {
+        const response = await privateAxios.get(`admins/${userId}`, {
           withCredentials: true,
         });
         const adminData = response.data.admin;
-        setAdmin(adminData);
+        setUser(adminData);
       } catch (err) {
-        if (!err?.response) {
+        if (!(err as AxiosError)?.response) {
           setErrMsg("No Server Response");
-        } else if (err.response?.status === 404) {
+        } else if ((err as AxiosError)?.response?.status === 404) {
           setErrMsg("aucune admin avec l'id entré");
         } else {
-          setErrMsg(err.response.data.error);
+          //@ts-expect-error ts-migrate(7006) FIXME: Parameter 'err' implicitly has an 'any' type.
+          setErrMsg((err as AxiosError)?.response?.data?.error);
         }
       } finally {
         setIsLoading(false);
       }
     };
     fetchAdminData();
-  }, [privateAxios, adminId, setErrMsg]);
+  }, [privateAxios, userId, setErrMsg]);
   return (
     <div className="container">
       <div className="row">
@@ -55,18 +63,16 @@ export default function AccountSettings({ setErrMsg }) {
           {isLoading && <Spin />}
           <h1>Paramétres Compte</h1>
           {changeSettings === 0 ? (
-            <AccountSettingsCard admin={admin} />
+            <AccountSettingsCard user={user} />
           ) : changeSettings === 1 ? (
             <ChangeAccountSettingsForm
-              admin={admin}
-              setAdmin={setAdmin}
+              user={user}
+              setUser={setUser}
               setErrMsg={setErrMsg}
               setChangeSettings={setChangeSettings}
             />
           ) : (
             <ChangePasswordForm
-              admin={admin}
-              setAdmin={setAdmin}
               setErrMsg={setErrMsg}
               setChangeSettings={setChangeSettings}
             />

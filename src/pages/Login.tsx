@@ -2,7 +2,7 @@ import LoginForm from "../components/Login/LoginForm";
 import styles from "../components/Login/Login.module.css";
 import Footer from "../assets/react.svg";
 
-export default function Login() {
+const Login = () => {
   return (
     <>
       <section
@@ -107,4 +107,6 @@ export default function Login() {
       <Footer />
     </>
   );
-}
+};
+
+export default Login;
