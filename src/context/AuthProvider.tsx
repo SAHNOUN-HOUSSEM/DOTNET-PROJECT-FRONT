@@ -10,8 +10,6 @@ const AuthContext = createContext({} as IAuthContext);
 export function AuthProvider({ children }: Props) {
   const [auth, setAuth] = useState({});
 
-  console.log("auth provider", auth);
-
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
       {children}

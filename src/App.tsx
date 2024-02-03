@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
 import Layout from "./pages/Layout";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -8,6 +7,8 @@ import RequireAuth from "./components/RequireAuth";
 import Home from "./pages/Home";
 import Parametrescompte from "./pages/Parametrescompte";
 import Missing from "./pages/Missing";
+
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function App() {
   return (

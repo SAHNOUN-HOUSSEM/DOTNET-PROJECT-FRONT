@@ -1,6 +1,5 @@
 import LoginForm from "../components/Login/LoginForm";
 import styles from "../components/Login/Login.module.css";
-import Footer from "../assets/react.svg";
 
 const Login = () => {
   return (
@@ -104,7 +103,6 @@ const Login = () => {
           </div>
         </div>
       </section>
-      <Footer />
     </>
   );
 };
