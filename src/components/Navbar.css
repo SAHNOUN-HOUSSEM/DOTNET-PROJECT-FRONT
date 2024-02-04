@@ -1,0 +1,77 @@
+.navbar-background-radial-gradient {
+  background-color: hsl(218, 41%, 15%);
+  background-image: radial-gradient(
+      650px circle at 0% 0%,
+      hsl(219, 46%, 57%) 15%,
+      hsl(218, 41%, 30%) 35%,
+      hsl(218, 41%, 20%) 75%,
+      hsl(218, 41%, 19%) 80%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1250px circle at 100% 100%,
+      hsl(218, 41%, 45%) 15%,
+      hsl(218, 41%, 30%) 35%,
+      hsl(218, 41%, 20%) 75%,
+      hsl(218, 41%, 19%) 80%,
+      transparent 100%
+    );
+}
+a,
+.logout-button {
+  -webkit-transition: 0.3s all ease;
+  -o-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+a,
+a:hover,
+.logout-button:hover {
+  text-decoration: none !important;
+}
+
+.navbar-nav {
+  margin-bottom: 0;
+}
+.navbar-nav .active > a span,
+.logout-button {
+  background: #007bff;
+  color: #fff;
+  border-radius: 30px;
+  display: inline-block;
+  padding: 5px 20px;
+}
+.navbar-nav a,
+.logout-button {
+  text-decoration: none !important;
+  display: inline-block;
+}
+.navbar-nav > li {
+  display: inline-block;
+}
+.navbar-nav > li > a,
+.logout-button {
+  padding: 10px 0px;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none !important;
+}
+.navbar-nav > li > a > span,
+.logout-button {
+  padding: 5px 20px;
+  display: inline-block;
+  -webkit-transition: 0.3s all ease;
+  -o-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+  border-radius: 30px;
+}
+.navbar-nav > li > a:hover > span,
+.logout-button:hover {
+  background: #007bff;
+  color: #fff;
+  border-radius: 30px;
+  display: inline-block;
+}
+
+.logout-button {
+  border: none;
+}
